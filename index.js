@@ -1,70 +1,78 @@
-function displayTemperature(response) {
-  console.log("Raw API response:", response);
+// Function to update the weather UI with data from the API response
+function updateWeatherUI(response) {
+  const data = response.data;
 
-  if (!response.data || !response.data.temperature) {
-    console.error("Unexpected API response format");
+  // Check if the API response has the expected structure
+  if (!data || !data.temperature || !data.city) {
+    console.error("API response is not in the expected format.");
     return;
   }
 
-  let temperature = Math.round(response.data.temperature.current);
-  let city = response.data.city;
+  // Update the city name
+  const cityElement = document.querySelector("#current-city");
+  cityElement.innerHTML = data.city;
 
-  console.log(`Updating city to ${city} and temperature to ${temperature}`);
+  // Update the temperature
+  const temperatureElement = document.querySelector("#temperature-value");
+  temperatureElement.innerHTML = Math.round(data.temperature.current);
 
-  const cityEl = document.querySelector("#current-city");
-  const tempEl = document.querySelector(".current-temperature-value");
+  // Update the weather description
+  const descriptionElement = document.querySelector("#weather-description");
+  descriptionElement.innerHTML = data.condition.description;
 
-  if (!cityEl) console.error("City element not found!");
-  if (!tempEl) console.error("Temperature element not found!");
+  // Update the humidity
+  const humidityElement = document.querySelector("#humidity");
+  humidityElement.innerHTML = data.temperature.humidity;
 
-  cityEl.innerHTML = city;
-  tempEl.innerHTML = temperature;
+  // Update the wind speed, converting from m/s to km/h if necessary
+  const windSpeedElement = document.querySelector("#wind-speed");
+  windSpeedElement.innerHTML = Math.round(data.wind.speed * 3.6); 
+
+  // Update the weather icon
+  const iconElement = document.querySelector("#icon");
+  iconElement.src = data.condition.icon_url;
+  iconElement.alt = data.condition.description;
 }
 
-
-function search(event) {
-  event.preventDefault();
-  let searchInputElement = document.querySelector("#search-input");
-  let city = searchInputElement.value.trim();
-  if (!city) return; // ignore empty searches
-  getWeather(city);
-}
-
+// Function to fetch weather data for a given city
 function getWeather(city) {
-  let apiKey = "a4c2o660020f7btfdfc6a5d36d3cc4f2"; 
-  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
-  axios.get(apiUrl).then(displayTemperature);
+  const apiKey = "a4c2o660020f7btfdfc6a5d36d3cc4f2";
+  const apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(updateWeatherUI).catch(error => {
+    console.error("Error fetching weather data:", error);
+    alert("Could not fetch weather for the specified city. Please try again.");
+  });
 }
 
+// Function to handle the search form submission
+function handleSearch(event) {
+  event.preventDefault();
+  const searchInput = document.querySelector("#search-input");
+  const city = searchInput.value.trim();
+  if (city) {
+    getWeather(city);
+  } else {
+    alert("Please enter a city name.");
+  }
+}
+
+// Function to format the current date and time
 function formatDate(date) {
-  let minutes = date.getMinutes();
-  let hours = date.getHours();
-  let day = date.getDay();
-
-  if (minutes < 10) minutes = `0${minutes}`;
-  if (hours < 10) hours = `0${hours}`;
-
-  let days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  let formattedDay = days[day];
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const formattedDay = days[date.getDay()];
   return `${formattedDay} ${hours}:${minutes}`;
 }
 
+// Main function to initialize the application
 document.addEventListener("DOMContentLoaded", () => {
-  let searchForm = document.querySelector("#search-form");
-  searchForm.addEventListener("submit", search);
+  const searchForm = document.querySelector("#search-form");
+  searchForm.addEventListener("submit", handleSearch);
 
-  let currentDateElement = document.querySelector("#current-date");
-  let currentDate = new Date();
-  currentDateElement.innerHTML = formatDate(currentDate);
+  const currentDateElement = document.querySelector("#current-date");
+  currentDateElement.innerHTML = formatDate(new Date());
 
-  // Optional: Show a default city's weather on load
+  // Load weather for a default city on page load
   getWeather("Paris");
 });

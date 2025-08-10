@@ -72,9 +72,10 @@ main {
 }
 
 .current-temperature-icon {
+  width: 48px; /* Adjusted size for the image icon */
+  height: 48px; /* Adjusted size for the image icon */
   position: relative;
-  top: -8px;
-  font-size: 40px;
+  top: 10px; /* Adjusted positioning for the image */
   margin-right: 10px;
 }
 
