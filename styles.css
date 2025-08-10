@@ -72,10 +72,10 @@ main {
 }
 
 .current-temperature-icon {
-  width: 48px; /* Adjusted size for the image icon */
-  height: 48px; /* Adjusted size for the image icon */
+  width: 60px;
+  height: 60px;
   position: relative;
-  top: 10px; /* Adjusted positioning for the image */
+  top: 10px;
   margin-right: 10px;
 }
 
@@ -90,10 +90,51 @@ main {
   top: -38px;
 }
 
+/* New styles for the forecast section */
+.weather-forecast {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  border-top: 1px solid #f9f7fe;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.weather-forecast-item {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.weather-forecast-day {
+  font-size: 16px;
+  color: rgba(39, 33, 66, 0.4);
+  margin-bottom: 5px;
+}
+
+.weather-forecast-icon {
+  width: 60px;
+  height: 60px;
+  display: block;
+  margin: 0 auto;
+}
+
+.weather-forecast-temps {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.weather-forecast-temps .high {
+  font-weight: bold;
+  color: #272142;
+}
+
+.weather-forecast-temps .low {
+  color: rgba(39, 33, 66, 0.4);
+}
+
 footer {
   border-top: 1px solid #f9f7fe;
   text-align: center;
   padding-top: 15px;
-
   color: rgba(39, 33, 66, 0.4);
 }

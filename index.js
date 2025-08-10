@@ -1,3 +1,10 @@
+// Helper function to format the day from a timestamp
+function formatDay(timestamp) {
+  const date = new Date(timestamp * 1000);
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return days[date.getDay()];
+}
+
 // Function to update the weather UI with data from the API response
 function updateWeatherUI(response) {
   const data = response.data;
@@ -32,15 +39,52 @@ function updateWeatherUI(response) {
   const iconElement = document.querySelector("#icon");
   iconElement.src = data.condition.icon_url;
   iconElement.alt = data.condition.description;
+
+  // Now, call the forecast API for the same city
+  getForecast(data.city);
 }
 
-// Function to fetch weather data for a given city
+// Function to fetch and display the forecast
+function displayForecast(response) {
+  const forecastElement = document.querySelector("#forecast");
+  const forecastData = response.data.daily;
+  
+  let forecastHTML = "";
+  forecastData.forEach((day, index) => {
+    // Only display the first 5 days of the forecast
+    if (index < 5) {
+      forecastHTML += `
+        <div class="weather-forecast-item">
+          <div class="weather-forecast-day">${formatDay(day.time)}</div>
+          <img src="${day.condition.icon_url}" alt="${day.condition.description}" class="weather-forecast-icon" />
+          <div class="weather-forecast-temps">
+            <span class="high">${Math.round(day.temperature.maximum)}°</span>
+            <span class="low">${Math.round(day.temperature.minimum)}°</span>
+          </div>
+        </div>
+      `;
+    }
+  });
+  
+  forecastElement.innerHTML = forecastHTML;
+}
+
+// Function to fetch current weather data for a given city
 function getWeather(city) {
   const apiKey = "a4c2o660020f7btfdfc6a5d36d3cc4f2";
   const apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}&units=metric`;
   axios.get(apiUrl).then(updateWeatherUI).catch(error => {
-    console.error("Error fetching weather data:", error);
-    alert("Could not fetch weather for the specified city. Please try again.");
+    console.error("Error fetching current weather data:", error);
+    alert("Could not fetch current weather for the specified city. Please try again.");
+  });
+}
+
+// Function to fetch forecast data for a given city
+function getForecast(city) {
+  const apiKey = "a4c2o660020f7btfdfc6a5d36d3cc4f2";
+  const apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayForecast).catch(error => {
+    console.error("Error fetching forecast data:", error);
   });
 }
 
